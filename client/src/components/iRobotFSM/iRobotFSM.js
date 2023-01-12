@@ -22,7 +22,6 @@ const iRobot = createMachine({
         },
         drive: {
             entry: () => {
-                debugger;
                 flagTimer = !flagTimer;
             },
             on: {
@@ -69,7 +68,6 @@ const iRobot = createMachine({
     },
     actions: {
         startTimer: () => {
-            debugger;
             flagTimer = !flagTimer;
         }
     }
@@ -144,6 +142,7 @@ export default function IRobot() {
         }
     }, [state]);
 
+    
     window.clickStart = function () {
         send('CLICK');
     }
@@ -152,7 +151,7 @@ export default function IRobot() {
         <div className='body'>
             <div>
                 <img src="logoIRobot.png"></img>
-                <div id="clockDisplay" class="clockDesign" dir="ltr">{state.value}</div>                
+                <div id="clockDisplay" className="clockDesign" dir="ltr">{state.value}</div>                
 
                 <div ref={room} className='room'>
                     <img ref={robotImg} className='robot' src="iRobot.png"></img>
