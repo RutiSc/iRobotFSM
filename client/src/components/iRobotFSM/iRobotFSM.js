@@ -3,8 +3,9 @@ import { createMachine, interpret } from 'xstate';
 import { useMachine } from '@xstate/react';
 import "./iRobotFSM.scss";
 import { getRoomDetails } from '../../services/roomService'
+import Directions from '../../enums/directions';
 
-var whereTurn = 'left';
+var whereTurn = Directions.left;
 var flagTimer = false;
 var positionLeft = 0;
 var positionTop = 100;
@@ -27,7 +28,7 @@ const iRobot = createMachine({
             on: {
                 DRIVE_TIMER: [{
                     target: 'right',
-                    cond: () => whereTurn == 'right',
+                    cond: () => whereTurn == Directions.right,
                 },
                 {
                     target: 'left',
@@ -35,7 +36,7 @@ const iRobot = createMachine({
                 ],
                 TURN_TIMER: [{
                     target: 'right',
-                    cond: () => whereTurn == 'right',
+                    cond: () => whereTurn == Directions.right,
                 },
                 {
                     target: 'left'
@@ -101,18 +102,18 @@ export default function IRobot() {
     }, []);
 
     function moveRobot(direction) {
-        if (direction == 'top') {
+        if (direction == Directions.top) {
             robotImg.current.style.top = positionTop + 'px';
             positionTop = positionTop + 100;
         }
         else {
-            direction == 'right' ? positionLeft = positionLeft + 100 : positionLeft = positionLeft - 100;
+            direction == Directions.right ? positionLeft = positionLeft + 100 : positionLeft = positionLeft - 100;
             robotImg.current.style.left = positionLeft + 'px';
         }
     }
 
     function turnRobot() {
-        whereTurn == 'right' ? rotate = rotate + 90 : rotate = rotate - 90;
+        whereTurn == Directions.right ? rotate = rotate + 90 : rotate = rotate - 90;
         robotImg.current.style.transform = 'rotate(' + rotate + 'deg)'
     }
 
@@ -120,7 +121,7 @@ export default function IRobot() {
         if (state.matches('drive')) {
             if (flagTimer) {
                 countDrive++;
-                whereTurn == 'right' ? whereTurn = 'left' : whereTurn = 'right';
+                whereTurn == Directions.right ? whereTurn = Directions.left : whereTurn = Directions.right;
                 moveRobot(whereTurn);
                 var myInterval = setInterval(() => {
                     moveRobot(whereTurn);
@@ -133,7 +134,7 @@ export default function IRobot() {
             }
             else {
                 setTimeout(() => { send('TURN_TIMER') }, 1000);
-                moveRobot('top');
+                moveRobot(Directions.top);
             }
         }
         if (state.matches('right') || state.matches('left')) {
@@ -142,7 +143,7 @@ export default function IRobot() {
         }
     }, [state]);
 
-    
+    //A solution to the problem of events listening in webpack
     window.clickStart = function () {
         send('CLICK');
     }
@@ -150,7 +151,7 @@ export default function IRobot() {
     return (
         <div className='body'>
             <div>
-                <img src="logoIRobot.png"></img>
+                <img className='logoIRobot' src="logoIRobot.png"></img>
                 <div id="clockDisplay" className="clockDesign" dir="ltr">{state.value}</div>                
 
                 <div ref={room} className='room'>
